@@ -30,12 +30,12 @@ def root() -> dict:
 def read_authors(
         limit: int = Query(DEFAULT_LIMIT, ge=0),
         offset: int = Query(DEFAULT_OFFSET, ge=0),
-        db: Session = Depends(get_db)):
+        db: Session = Depends(get_db)) -> list[schemas.Author]:
     return crud.get_all_authors(db=db, limit=limit, offset=offset)
 
 
 @app.get("/author/{author_id}/", response_model=schemas.Author)
-def read_author(author_id: int, db: Session = Depends(get_db)):
+def read_author(author_id: int, db: Session = Depends(get_db)) -> schemas.Author:
     db_author = crud.get_author(db=db, author_id=author_id)
 
     if db_author is None:
@@ -48,7 +48,7 @@ def read_author(author_id: int, db: Session = Depends(get_db)):
 def create_author(
     author: schemas.AuthorCreate,
     db: Session = Depends(get_db),
-):
+) -> schemas.Author:
     db_author = crud.get_author_type_by_name(db=db, name=author.name)
 
     if db_author:
@@ -63,12 +63,12 @@ def read_books(
         limit: int = Query(DEFAULT_LIMIT, ge=0),
         offset: int = Query(DEFAULT_OFFSET, ge=0),
         db: Session = Depends(get_db),
-):
+) -> list[schemas.Book]:
     return crud.get_books_list(db=db, author_id=author_id, limit=limit, offset=offset)
 
 
 @app.get("/book/{book_id}/", response_model=schemas.Book)
-def read_book(book_id: int, db: Session = Depends(get_db)):
+def read_book(book_id: int, db: Session = Depends(get_db)) -> schemas.Book:
     db_book = crud.get_book(db=db, book_id=book_id)
 
     if db_book is None:
@@ -78,7 +78,7 @@ def read_book(book_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/book/", response_model=schemas.Book)
-def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
+def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)) -> schemas.Book:
     db_author = crud.get_author(db=db, author_id=book.author_id)
 
     if db_author is None:
